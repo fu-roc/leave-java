@@ -5,14 +5,29 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/leavesys?useUnicode=true&characterEncoding=utf-8&useSSL=false
+      url: jdbc:mysql://localhost:3306/leavesys?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
       username: root
-      password: root@01
+      password: admin123
+  devtools:
+    restart:
+      additional-paths: /src/main/java
+      enabled: true
 
 mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:mapper/*.xml
-  type-aliases-package: com.cyz.mapper
+  type-aliases-package: com.cyz.pojo
+  configuration:
+    map-underscore-to-camel-case: true
 
+logging:
+  level:
+    root: info
+    com.cyz: debug
+
+oss:
+  qiniu:
+    domain: rwsbd64re.bkt.clouddn.com
+    accessKey: _UXiQWuOBpAAuikhdxbuUs-ZcN7_NNt830-EAaoM
+    secretKey: Cqm2z_oWlN6omWtZo5l2nJNzL77ePfoMXIgZPPIy
+    bucketName: leave-sys-picture
 

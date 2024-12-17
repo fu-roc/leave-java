@@ -1,7 +1,154 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cyz.mapper.TeacherMapper">
+
+    <update id="updateResultByRid">
+        update lesson_leave
+        set result_tea = #{resultTea}
+        where rid = #{rid};
+    </update>
+
+    <update id="updateInfo">
+        update teacher
+        set
+        <if test="tname != null">
+            tname = #{tname}
+        </if>
+        <if test="title != null">
+            title = #{title}
+        </if>
+        <if test="gender != null">
+            gender = #{gender}
+        </if>
+        <if test="age != null">
+            age = #{age}
+        </if>
+        <if test="pwd != null">
+            pwd = #{pwd}
+        </if>
+        <if test="phone != null">
+            phone = #{phone}
+        </if>
+        <if test="email != null">
+            email = #{email}
+        </if>
+        <if test="cla != null">
+            cla = #{cla}
+        </if>
+        <if test="address != null">
+            address = #{address}
+        </if>
+        <if test="level != null">
+            `level` = #{level}
+        </if>
+        <if test="college != null">
+            college = #{college}
+        </if>
+        <if test="headPic != null">
+            head_pic = #{headPic}
+        </if>
+        <where>
+            tid = #{tid}
+        </where>
+    </update>
+
+    <update id="updateHeadPic">
+        update teacher
+        set head_pic = #{imgName}
+        where tid = #{tid}
+    </update>
+
+    <select id="selectLeaveHistory" resultType="com.furoc.vo.LessonLeaveVo">
+        select rid,
+               s.sid,
+               clname,
+               uname,
+               cuname,
+               date,
+               result_inst,
+               result_tea
+        from teacher t
+                 join cls c on t.tid = c.tid
+                 join student s on c.clid = s.clid
+                 join lesson_leave ll on s.sid = ll.sid
+                 join clesson c2 on ll.ccuid = c2.ccuid
+                 join lesson l on c2.cuid = l.cuid
+        where t.tid = #{tid}
+          and result_tea != '待审核'
+    </select>
+
+    <select id="selectLeaveWorking" resultType="com.furoc.vo.LessonLeaveVo">
+        select rid,
+               s.sid,
+               clname,
+               uname,
+               cuname,
+               date,
+               result_inst,
+               result_tea
+        from teacher t
+                 join cls c on t.tid = c.tid
+                 join student s on c.clid = s.clid
+                 join lesson_leave ll on s.sid = ll.sid
+                 join clesson c2 on ll.ccuid = c2.ccuid
+                 join lesson l on c2.cuid = l.cuid
+        where t.tid = #{tid}
+          and result_tea = '待审核'
+    </select>
+
+    <select id="selectIsTea" resultType="java.lang.Boolean">
+        select tid
+        from teacher
+        where tid = #{tid};
+    </select>
+
+    <select id="selectByTid" resultType="com.furoc.pojo.Teacher">
+        select tid,
+               tname,
+               title,
+               gender,
+               age,
+               phone,
+               email,
+               cla,
+               address,
+               level,
+               college,
+               head_pic
+        from teacher
+        where tid = #{tid};
+    </select>
+
+    <select id="selectAllLeaveInfo" resultType="com.furoc.vo.LessonLeaveVo">
+        select ll.rid,
+               s.sid,
+               clname,
+               uname,
+               cuname,
+               date,
+               result_inst,
+               result_tea
+        from teacher t
+                 join teaching t2 on t.tid = t2.tid
+                 join lesson_leave ll on t2.ccuid = ll.ccuid
+                 join student s on s.sid = ll.sid
+                 join cls c on c.clid = s.clid
+                 join clesson c2 on ll.ccuid = c2.ccuid
+                 join lesson l on c2.cuid = l.cuid
+        where ll.result_tea != '待审核';
+    </select>
+
+    <select id="selectTeaByTid" resultType="com.furoc.pojo.Teacher">
+        select *
+        from teacher
+        where tid = #{tid}
+    </select>
+
+    <insert id="insertClesson">
+        insert into clesson(ccuid,cuid,roid,starttime,endtime,<if test="code != null">#{code},</if>week)
+            value (#{ccuid}, #{cuid}, #{roid}, #{starttime}, #{endtime}, <if test="code != null">#{code},</if> #{week})
+    </insert>
 
 </mapper>

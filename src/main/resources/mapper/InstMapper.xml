@@ -1,8 +1,180 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cyz.mapper.InstMapper">
+    <update id="updateResult">
+        update leave_campus
+        set result = #{result}
+        where lid = #{lid};
+    </update>
 
+    <update id="updateResultInst">
+        update lesson_leave
+        set result_inst = #{resultInst}
+        where rid = #{rid};
+    </update>
 
+    <update id="reviewFree">
+        update free
+        set result = #{result}
+        where mid = #{mid};
+    </update>
+    <update id="reviewSecondScore">
+        update second_score
+        set result = #{result}
+        where rid = #{rid}
+    </update>
+    <select id="selectReviewHistory" resultType="com.furoc.vo.LessonLeaveVo">
+        select rid,
+               s.sid,
+               clname,
+               uname,
+               cuname,
+               date,
+               result_inst,
+               result_tea
+        from teacher t
+                 join cls c on t.tid = c.tid
+                 join student s on c.clid = s.clid
+                 join lesson_leave ll on s.sid = ll.sid
+                 join clesson c2 on ll.ccuid = c2.ccuid
+                 join lesson l on c2.cuid = l.cuid
+        where t.tid = #{tid}
+          and result_inst != '待审核';
+    </select>
+    <select id="selectReviewWorking" resultType="com.furoc.vo.LessonLeaveVo">
+        select rid,
+               s.sid,
+               clname,
+               uname,
+               cuname,
+               date,
+               result_inst,
+               result_tea
+        from teacher t
+                 join cls c on t.tid = c.tid
+                 join student s on c.clid = s.clid
+                 join lesson_leave ll on s.sid = ll.sid
+                 join clesson c2 on ll.ccuid = c2.ccuid
+                 join lesson l on c2.cuid = l.cuid
+        where t.tid = #{tid}
+          and result_inst = '待审核';
+    </select>
+    <select id="selectCampusInReview" resultType="com.furoc.vo.LeaveCampusVo">
+        select lid,
+               tname,
+               s.sid,
+               uname,
+               date,
+               starttime,
+               endtime,
+               reason,
+               destination,
+               result,
+               remarks
+        from leave_campus lc
+                 join student s on lc.sid = s.sid
+                 join teacher t on lc.tid = t.tid
+        where result = '待审核'
+          and t.tid = #{tid};
+    </select>
+    <select id="selectLeaveHistory" resultType="com.furoc.vo.LeaveCampusVo">
+        select lid,
+               tname,
+               s.sid,
+               uname,
+               date,
+               starttime,
+               endtime,
+               reason,
+               destination,
+               result,
+               remarks
+        from leave_campus lc
+                 join student s on lc.sid = s.sid
+                 join teacher t on lc.tid = t.tid
+        where t.tid = #{tid}
+          and result != '待审核';
+    </select>
+    <select id="isInst" resultType="java.lang.Boolean">
+        select distinct #{tid}
+        from cls
+    </select>
+    <select id="getFree" resultType="com.furoc.vo.FreeVo">
+        select mid, proof, reason, cuname, uname, result, `distinct`
+        from free f
+                 join clesson c on c.ccuid = f.ccuid
+                 join lesson l on l.cuid = c.cuid
+                 join student s on s.sid = f.sid
+                 join cls c2 on s.clid = c2.clid
+                 join teacher t on c2.tid = t.tid
+        where t.tid = #{tid}
+    </select>
+
+    <select id="getFreeInReview" resultType="com.furoc.vo.FreeVo">
+        select mid, proof, reason, cuname, uname, result, `distinct`
+        from free f
+                 join clesson c on c.ccuid = f.ccuid
+                 join lesson l on l.cuid = c.cuid
+                 join student s on s.sid = f.sid
+                 join cls c2 on s.clid = c2.clid
+                 join teacher t on c2.tid = t.tid
+        where t.tid = #{tid}
+          and result = '待审核'
+    </select>
+
+    <select id="getFreeHistory" resultType="com.furoc.vo.FreeVo">
+        select mid, proof, reason, cuname, uname, result, `distinct`
+        from free f
+                 join clesson c on c.ccuid = f.ccuid
+                 join lesson l on l.cuid = c.cuid
+                 join student s on s.sid = f.sid
+                 join cls c2 on s.clid = c2.clid
+                 join teacher t on c2.tid = t.tid
+        where t.tid = #{tid}
+          and result != '待审核'
+    </select>
+
+    <select id="getSecondScoreInReview" resultType="com.furoc.vo.SecondScoreVo">
+        select rid,
+               type,
+               name,
+               reward,
+               time,
+               ss.level,
+               proof,
+               grade,
+               s.sid,
+               uname,
+               tname,
+               result
+        from second_score ss
+                 join student s on s.sid = ss.sid
+                 join cls c on c.clid = s.clid
+                 join teacher t on t.tid = c.tid
+        where t.tid = #{tid}
+          and ss.result = '待审核'
+    </select>
+
+    <select id="getSecondScoreHistory" resultType="com.furoc.vo.SecondScoreVo">
+        select rid,
+               type,
+               name,
+               reward,
+               time,
+               ss.level,
+               proof,
+               grade,
+               s.sid,
+               uname,
+               tname,
+               result
+        from second_score ss
+                 join student s on s.sid = ss.sid
+                 join cls c on c.clid = s.clid
+                 join teacher t on t.tid = c.tid
+        where t.tid = #{tid}
+          and ss.result != '待审核'
+    </select>
 </mapper>
